@@ -33,7 +33,7 @@ clang.systems = ["x86_64-darwin", "aarch64-darwin"]
 
 [build.htop]
  # sandboxed build
-#sandbox = "pure"
+sandbox = "pure"
 runtime-packages = ["gcc", "ncurses", "libbsd", "libcap", "libucl", "bash"]
 command = '''
   if [[ "$(uname)" == "Darwin" ]]; then

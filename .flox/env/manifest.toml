@@ -1,0 +1,50 @@
+version = 1
+
+[install]
+ # build tools
+autoconf.pkg-path = "autoconf"
+automake.pkg-path = "automake"
+libtool.pkg-path  = "libtool"
+pkg-config.pkg-path = "pkg-config"
+gnumake.pkg-path = "gnumake"
+gnused.pkg-path = "gnused"
+
+ # runtime + link-time deps
+ncurses.pkg-path = "ncurses"
+sockstat.pkg-path = "sockstat"
+sockstat.systems = ["x86_64-darwin", "aarch64-darwin"]
+libbsd.pkg-path = "libbsd"
+libcap.pkg-path = "libcap"
+libcap.systems = ["x86_64-linux", "aarch64-linux"]
+libucl.pkg-path = "libucl"
+bash.pkg-path = "bash" # promotes consistent behavior across platforms
+
+ # platform-specific build tools
+IOKit.pkg-path = "darwin.apple_sdk.frameworks.IOKit"
+IOKit.systems = ["x86_64-darwin", "aarch64-darwin"]
+CoreFoundation.pkg-path = "darwin.apple_sdk.frameworks.CoreFoundation"
+CoreFoundation.priority = 2
+CoreFoundation.systems = ["x86_64-darwin", "aarch64-darwin"]
+gcc.pkg-path = "gcc"
+gcc.systems = ["x86_64-linux", "aarch64-linux"]
+clang.pkg-path = "clang"
+clang.systems = ["x86_64-darwin", "aarch64-darwin"]
+
+
+[build.htop]
+ # sandboxed build
+#sandbox = "pure"
+runtime-packages = ["gcc", "ncurses", "libbsd", "libcap", "libucl", "bash"]
+command = '''
+  if [[ "$(uname)" == "Darwin" ]]; then
+    # patches kIOMainPortDefault  ^f^r kIOMasterPortDefault for older macOS SDKs
+    sed -i.bak 's/kIOMainPortDefault/kIOMasterPortDefault/g' darwin/DarwinMachine.c
+  fi
+
+  autoreconf -i
+  ./configure --prefix=$out \
+              --with-ncurses \
+              --enable-unicode
+  make -j$(nproc)
+  make install
+'''

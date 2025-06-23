@@ -33,6 +33,8 @@ clang.systems = ["x86_64-darwin", "aarch64-darwin"]
 
 [build.htop]
  # sandboxed build
+version = "3.5.0-dev"
+description = "Demo fork of interactive process viewer"
 sandbox = "pure"
 runtime-packages = ["gcc", "ncurses", "libbsd", "libcap", "libucl", "bash"]
 command = '''
